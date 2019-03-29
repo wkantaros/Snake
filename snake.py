@@ -1,26 +1,40 @@
 import random
 
 class snake:
-    def __init__(self, r, c, length=2):
-        if (r > 3 and c > 3):
+    def __init__(self, row, col, initLength=2):
+        if (row > 3 and col > 3):
             self.grow = False
-            grid = [[" " for j in range(c)] for i in range(r)]
+            grid = [[" " for j in range(col)] for i in range(row)]
             initRowSnake = 1
-            self.length = length
+            self.length = initLength
             self.tl = [1, 1]
-            self.hd = [1, length]
-            for i in range(length):
+            self.hd = [1, initLength]
+            for i in range(initLength):
                 grid[1][1 + i] = "r"
             self.grid = grid
         else:
             print("Sorry, r and c must be at least 4 in length")
 
+    """
+    gets the value associated with the row and col from hd
+    """
     def getHdVal(self):
         return self.grid[self.hd[0]][self.hd[1]]
 
+    """
+    sets the value associated with hd to char
+
+    :param char: the string to set the value of hd to
+    """
     def setHdVal(self, char):
         self.grid[self.hd[0]][self.hd[1]] = char
 
+    """
+    gets the next index from a char in the grid
+
+    :param index: the index of char in grid in [row, col] form
+    :returns: the next index from respective param
+    """
     def getNext(self, index):
         direction = self.grid[index[0]][index[1]]
         if direction == "r":
@@ -40,6 +54,9 @@ class snake:
                 raise Exception("d out of bounds")
             return [index[0] + 1, index[1]]
 
+    """
+    moves snake one space
+    """
     def move(self):
         if (self.grow):
             self.length += 1
@@ -58,6 +75,11 @@ class snake:
         self.hd = nextHd
         self.setHdVal(direction)
 
+    """
+    changes direction of snake by updating hdValue to that direction
+
+    :param char: character for desired change in direction
+    """
     def changeDir(self, char):
         if char == "r" and self.getHdVal() != "l":
             self.setHdVal(char)
@@ -68,6 +90,9 @@ class snake:
         elif char == "d" and self.getHdVal() != "u":
             self.setHdVal(char)
 
+    """
+    generates 'food' in a random spot on the board
+    """
     def generateFood(self):
         r = random.randint(0, len(self.grid) - 1)
         c = random.randint(0, len(self.grid[0]) - 1)
