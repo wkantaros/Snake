@@ -113,18 +113,45 @@ class Snake:
             str += "\n"
         return str
 
-    def playGame(self):
-        self.generateFood()
-        print(self)
-        while(True):
-            try:
-                text = input("")
-                self.changeDir(text)
-                self.move()
-                print(self)
-            except:
-                print("game over\nscore: {}".format(self.length))
-                return
+## animation functions
+numRows = 50
+numCols = 67
+snake = Snake(numRows,numCols,4)
 
-snake = Snake(10,16,6)
-snake.playGame()
+def printBoard():
+    for i in range(numRows):
+        for j in range(numCols):
+            if snake.grid[i][j] != " ":
+                fill(#f44242)
+                noStroke()
+                rect(j*12,i*12,12,12)
+                
+
+def gameOver():
+    message = "game over\nscore: {}".format(snake.length)
+    textSize(24)
+    text(message, 10, 20)
+    
+def setup():
+    size(804, 600)
+    background(51)
+    printBoard()
+    frameRate(20)
+
+def draw():
+    background(51)
+    try:
+        printBoard()
+        snake.move()
+        if (key == CODED):
+            if keyCode == UP:
+                snake.changeDir("u")
+            elif keyCode == DOWN:
+                snake.changeDir("d")
+            elif keyCode == LEFT:
+                snake.changeDir("l")
+            elif keyCode == RIGHT:
+                snake.changeDir("r")
+    except:
+        gameOver()
+        noLoop()
