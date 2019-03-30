@@ -1,8 +1,14 @@
 import random
+# import os 
+# os.system("afplay filename")
+#from playsound import playsound - this is how to do it if you could in python
+#playsound("filename")
+
 
 class Snake:
     def __init__(self, row, col, initLength=2):
         if (row > 3 and col > 3):
+            self.isGoing = True
             self.grow = False
             grid = [[" " for j in range(col)] for i in range(row)]
             initRowSnake = 1
@@ -40,18 +46,22 @@ class Snake:
         direction = self.grid[index[0]][index[1]]
         if direction == "r":
             if index[1] + 1 >= len(self.grid[0]):
+                self.isGoing = False
                 raise Exception("r out of bounds")
             return [index[0], index[1] + 1]
         elif direction == "l":
             if index[1] - 1 < 0:
+                self.isGoing = False
                 raise Exception("l out of bounds")
             return [index[0], index[1] - 1]
         elif direction == "u":
             if index[0] - 1 < 0:
+                self.isGoing = False
                 raise Exception("u out of bounds")
             return [index[0] - 1, index[1]]
         elif direction == "d":
             if index[0] + 1 >= len(self.grid):
+                self.isGoing = False
                 raise Exception("d out of bounds")
             return [index[0] + 1, index[1]]
 
@@ -72,6 +82,7 @@ class Snake:
             self.grow = True
             self.generateFood()
         elif self.grid[nextHd[0]][nextHd[1]] != " ":
+            self.isGoing = False
             raise Exception("ran into tail :(")
         self.hd = nextHd
         self.setHdVal(direction)
@@ -113,25 +124,56 @@ class Snake:
             str += "\n"
         return str
 
-## animation functions
+# animation functions
 numRows = 50
 numCols = 67
-snake = Snake(numRows,numCols,4)
+counter = [1]
+snake = Snake(numRows, numCols, 10)
 
 def printBoard():
     for i in range(numRows):
         for j in range(numCols):
-            if snake.grid[i][j] != " ":
-                fill(#f44242)
+            chars = "uldr"
+            if snake.grid[i][j] in chars:
+                fill(255, 255, 255)
                 noStroke()
-                rect(j*12,i*12,12,12)
+                rect(j * 12, i * 12, 12, 12)
+            elif snake.grid[i][j] == "*":
+                fill(244, 66, 66)
+                noStroke()
+                rect(j * 12, i * 12, 12, 12)
                 
-
+def printBoardInverse():
+    for i in range(numRows):
+        for j in range(numCols):
+            chars = "uldr"
+            if snake.grid[i][j] in chars:
+                fill(244, 66, 66)
+                noStroke()
+                rect(j * 12, i * 12, 12, 12)
+            elif snake.grid[i][j] == "*":
+                fill(255, 255, 255)
+                noStroke()
+                rect(j * 12, i * 12, 12, 12)
+                
 def gameOver():
+    fill(255, 255, 255)
     message = "game over\nscore: {}".format(snake.length)
     textSize(24)
     text(message, 10, 20)
-    
+    counter[0] += 1
+
+def changeDir():
+    if (key == CODED):
+        if keyCode == UP:
+            snake.changeDir("u")
+        elif keyCode == DOWN:
+            snake.changeDir("d")
+        elif keyCode == LEFT:
+            snake.changeDir("l")
+        elif keyCode == RIGHT:
+            snake.changeDir("r")
+
 def setup():
     size(804, 600)
     background(51)
@@ -140,18 +182,19 @@ def setup():
 
 def draw():
     background(51)
-    try:
+    if counter[0] == 1:
+        try:
+            changeDir()
+            snake.move()
+            printBoard()
+        except:
+            printBoardInverse()
+            gameOver()
+            frameRate(2)
+    elif counter[0] == 2:
         printBoard()
-        snake.move()
-        if (key == CODED):
-            if keyCode == UP:
-                snake.changeDir("u")
-            elif keyCode == DOWN:
-                snake.changeDir("d")
-            elif keyCode == LEFT:
-                snake.changeDir("l")
-            elif keyCode == RIGHT:
-                snake.changeDir("r")
-    except:
+        gameOver()
+    elif counter[0] == 3:
+        printBoardInverse()
         gameOver()
         noLoop()
