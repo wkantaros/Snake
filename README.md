@@ -1,5 +1,6 @@
 # Snake
-snakelogic.py contains all of the logic necessary to run a snake game
+I made this primarily to experiment with processing
 
+snakelogic.py contains all of the logic necessary to run a snake game (very straightforward)
 
-I was experimenting with Processing, and the code to run a physical game can be found in the game folder
+to run a physical game, use game.pyde 
