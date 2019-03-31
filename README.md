@@ -1,6 +1,7 @@
 # Snake
-I made this primarily to experiment with processing
+I made this primarily to experiment with different ways to output graphics
 
-snakelogic.py contains all of the logic necessary to run a snake game (very straightforward)
+a python/processing approach can be found in the game folder. (game.pyde has everything you need)
 
-to run a physical game, use game.pyde 
+the playonline folder contains the js approach, which is objectively cleaner and better code
+However, there is a bug that occurs when two arrow keys are pressed simultaneously - I will fix this soon
