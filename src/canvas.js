@@ -4,28 +4,33 @@ canvas.height = window.innerHeight - 4;
 
 // lets draw 2d elements
 var c = canvas.getContext('2d');
+var prevKeyPressed = NaN;
 var keyPressed = NaN;
 
+// var snake;
 window.addEventListener('keydown',function(event){
   if (keyPressed &&
        ((event.which == 38 && keyPressed != 40) ||
         (event.which == 40 && keyPressed != 38) ||
         (event.which == 37 && keyPressed != 39) ||
-        (event.which == 39 && keyPressed != 37)))
+        (event.which == 39 && keyPressed != 37))){
+          prevKeyPressed = keyPressed;
           keyPressed = event.which;
-  else if (event.which <= 40 && event.which >= 38)
+        }
+  else if (!keyPressed && event.which <= 40 && event.which >= 38)
       keyPressed = event.which;
 });
 
 window.addEventListener('resize',function(event){
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = window.innerHeight - 4;
 });
 
 // makes square for snake to build off of
 function Square(x, y, dir){
   this.x = x;
   this.y = y;
+  this.dir = dir;
   this.equals = function(other){
     return (this.x == other.x) && (this.y == other.y);
   };
@@ -35,7 +40,7 @@ function Snake(initLength){
   this.body = (function(){
     var ar = [];
     for (let i = 0; i < initLength; i++)
-      ar.push(new Square(105 + (i * 15), 105));
+      ar.push(new Square(105 + (i * 15), 105, 'r'));
     return ar;
   })();
 
@@ -56,7 +61,6 @@ function Snake(initLength){
       if (shouldContinue) continue;
       return new Square(foodX, foodY);
     }
-
   };
 
   this.food = this.makeFood();
@@ -79,16 +83,16 @@ function Snake(initLength){
     if (keyPressed){
       let hd = this.body[this.body.length - 1];
       if (keyPressed == 39){ // right
-        this.body.push(new Square(hd.x + 15, hd.y));
+        this.body.push(new Square(hd.x + 15, hd.y, 'r'));
       }
       else if (keyPressed == 37){ // left
-        this.body.push(new Square(hd.x - 15, hd.y));
+        this.body.push(new Square(hd.x - 15, hd.y, 'l'));
       }
       else if (keyPressed == 38){ // up
-        this.body.push(new Square(hd.x, hd.y - 15, hd.dir));
+        this.body.push(new Square(hd.x, hd.y - 15, 'u'));
       }
       else if (keyPressed == 40){ //down
-        this.body.push(new Square(hd.x, hd.y + 15, hd.dir));
+        this.body.push(new Square(hd.x, hd.y + 15, 'd'));
       }
       if (this.body[this.body.length - 1].equals(this.food)){
         this.food = this.makeFood();
@@ -102,7 +106,7 @@ function Snake(initLength){
     else {
       this.display();
     }
-  }
+  };
 
   this.isAlive = function(){
     let hd = this.body[this.body.length - 1];
@@ -116,7 +120,7 @@ function Snake(initLength){
       }
     }
     return true;
-  }
+  };
 }
 
 // i is number of "break points in line", wig is factor for wiggle
@@ -160,13 +164,13 @@ function makeBoundary(){
 
 function gameOver(snake){
   snake.display(true);
-  var audio = new Audio('assets/game-over.wav');
-  audio.play();
-  c.fillStyle = "#ffffff";
+  // var audio = new Audio('assets/game-over.wav');
+  // audio.play();
+  c.fillStyle = "#386FA4";
   c.font = "16px Arial";
-  c.fillText("GAME OVER", 25, 50);
-  c.fillText("Score: " + snake.body.length, 25, 70);
-  c.fillText("Press 'r' to replay", 25, 90);
+  c.fillText("GAME OVER", canvas.width - 150, 50);
+  c.fillText("Score: " + snake.body.length, canvas.width - 150, 70);
+  c.fillText("Press 'r' to replay", canvas.width - 150, 90);
   var handler = function again(event){
     if (event.which == 82){
       keyPressed = NaN;
@@ -177,20 +181,17 @@ function gameOver(snake){
   window.addEventListener('keydown',handler, false);
 }
 
-// set fps & init snake
-var fps = 20;
+// set fps
+var fps = 30;
 var now;
 var then = Date.now();
 var interval = 1000/fps;
 var delta;
+snake = new Snake(10);
 function newGame(){
-  var snake = new Snake(10);
-  var isOver = false;
+  snake = new Snake(10);
   // create loop
   function animate(){
-    if (isOver){
-      return
-    }
     requestAnimationFrame(animate);
     now = Date.now();
     delta = now - then;
@@ -198,11 +199,25 @@ function newGame(){
       then = now - (delta % interval);
       c.clearRect(0,0,innerWidth,innerHeight);
       makeBoundary();
-      if (snake.isAlive())
-        snake.update();
+      if (!keyPressed){ // if game hasn't started yet
+        c.fillStyle = "#386FA4";
+        c.font = "16px Arial";
+        c.fillText("Press an arrow key to start!", canvas.width - 240, 50);
+      }
+      if (snake.isAlive()){
+        let hd = snake.body[snake.body.length - 1];
+        if (!((keyPressed == "39" && hd.dir == "l") ||
+            (keyPressed == "37" && hd.dir == "r") ||
+            (keyPressed == "40" && hd.dir == "u") ||
+            (keyPressed == "38" && hd.dir == "d"))){
+          snake.update();
+        } else {
+          keyPressed = prevKeyPressed;
+          snake.update();
+        }
+      }
       else{
         gameOver(snake);
-        isOver = true;
       }
     }
   }
