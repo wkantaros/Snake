@@ -1,7 +1,10 @@
 var canvas = document.querySelector('canvas');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 4;
-
+var x1 = 10;
+var y1 = 10;
+var x2 = (15 * Math.floor(canvas.width/15)) - 10;
+var y2 = (15 * Math.floor(canvas.height/15)) - 10;
 // lets draw 2d elements
 var c = canvas.getContext('2d');
 var moveQueue = [];
@@ -21,6 +24,8 @@ window.addEventListener('keydown',function(event){
 window.addEventListener('resize',function(event){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - 4;
+    x2 = (15 * Math.floor(canvas.width/15)) - 10;
+    y2 = (15 * Math.floor(canvas.height/15)) - 10;
 });
 
 // makes square for snake to build off of
@@ -47,8 +52,8 @@ function Snake(initLength){
     }
     while(true){
       let shouldContinue = false;
-      let foodX = 15 * getRandomInt(1, Math.floor((canvas.width - 25)/ 15));
-      let foodY = 15 * getRandomInt(1, Math.floor((canvas.height - 25 )/ 15));
+      let foodX = 15 * getRandomInt(1, Math.floor(canvas.width  / 15) - 2);
+      let foodY = 15 * getRandomInt(1, Math.floor(canvas.height / 15) - 2);
       for (let i = 0; i < this.body.length; i++){
         if (this.body[i].equals(new Square(foodX, foodY))){
           shouldContinue = true;
@@ -111,8 +116,8 @@ function Snake(initLength){
 
   this.isAlive = function(){
     let hd = this.body[this.body.length - 1];
-    if (hd.x + 15 > (canvas.width - 10) || hd.x < 15 ||
-        hd.y > (canvas.height - 20) || hd.y < 15){
+    if (hd.x > x2 - 20 || hd.x < 15 ||
+        hd.y > y2 - 20 || hd.y < 15){
       return false;
     }
     for (let i = 0; i < this.body.length - 1; i++){
@@ -151,12 +156,10 @@ function Line(x1, y1, x2, y2, i, wig){
 
 // builds a box
 function makeBoundary(){
-  var line1 = new Line(10, 10, 10, canvas.height - 10, 20, 8);
-  var line2 = new Line(canvas.width - 10, 10,
-    canvas.width - 10, canvas.height - 10, 20, 8);
-  var line3 = new Line(10, 10, canvas.width - 10, 10, 20, 8);
-  var line4 = new Line(10, canvas.height - 10, canvas.width - 10,
-    canvas.height - 10, 20, 8);
+  var line1 = new Line(x1, y1, x1, y2, 20, 8);
+  var line2 = new Line(x2, y1, x2, y2, 20, 8);
+  var line3 = new Line(x1, y1, x2, y1, 20, 8);
+  var line4 = new Line(x1, y2, x2, y2, 20, 8);
   line1.draw();
   line2.draw();
   line3.draw();
