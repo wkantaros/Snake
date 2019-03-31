@@ -24,20 +24,20 @@ window.addEventListener('resize',function(event){
 });
 
 // makes square for snake to build off of
-function Square(x, y, dir){
+function Square(x, y){
   this.x = x;
   this.y = y;
-  this.dir = dir;
-  this.equals = function(other){
-    return (this.x == other.x) && (this.y == other.y);
-  };
 }
+
+Square.prototype.equals = function(other){
+    return (this.x == other.x) && (this.y == other.y);
+};
 
 function Snake(initLength){
   this.body = (function(){
     var ar = [];
     for (let i = 0; i < initLength; i++)
-      ar.push(new Square(105 + (i * 15), 105, 'r'));
+      ar.push(new Square(105 + (i * 15), 105));
     return ar;
   })();
 
@@ -72,6 +72,7 @@ function Snake(initLength){
       c.fillStyle = '#fa34a3';
       c.fillRect(hd.x,hd.y,15,15);
     }
+    // c.fillStyle = '#9381FF';
     c.fillStyle = '#fa34a3';
     c.fillRect(this.food.x,this.food.y,15,15);
   };
@@ -84,16 +85,16 @@ function Snake(initLength){
         moveQueue.shift();
       }
       if (move == 39){ // right
-        this.body.push(new Square(hd.x + 15, hd.y, 'r'));
+        this.body.push(new Square(hd.x + 15, hd.y));
       }
       else if (move == 37){ // left
-        this.body.push(new Square(hd.x - 15, hd.y, 'l'));
+        this.body.push(new Square(hd.x - 15, hd.y));
       }
       else if (move == 38){ // up
-        this.body.push(new Square(hd.x, hd.y - 15, 'u'));
+        this.body.push(new Square(hd.x, hd.y - 15));
       }
       else if (move == 40){ // down
-        this.body.push(new Square(hd.x, hd.y + 15, 'd'));
+        this.body.push(new Square(hd.x, hd.y + 15));
       }
       if (this.body[this.body.length - 1].equals(this.food)){
         this.food = this.makeFood();
@@ -168,7 +169,7 @@ function gameOver(snake){
   // audio.play();
   c.fillStyle = "#386FA4";
   c.font = "16px Arial";
-  c.fillText("GAME OVER", canvas.width - 150, 50);
+  c.fillText("Game Over", canvas.width - 150, 50);
   c.fillText("Score: " + snake.body.length, canvas.width - 150, 70);
   c.fillText("Press 'r' to replay", canvas.width - 150, 90);
   var handler = function again(event){
@@ -182,7 +183,7 @@ function gameOver(snake){
 }
 
 // set fps
-var fps = 30;
+var fps = 20;
 var now;
 var then = Date.now();
 var interval = 1000/fps;
