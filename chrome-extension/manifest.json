@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Snake Extension",
+  "version": "0.1",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": ["content.js"],
+      "css": ["styleguide.css"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_icon": "assets/icon.png"
+  }
+}
