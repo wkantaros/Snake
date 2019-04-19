@@ -1,5 +1,4 @@
 // content.js
-// var gameIsGoing = true
 function disableKeyScroll() {
   console.log("I made it here bitches");
   window.addEventListener("keydown", function(e) {
@@ -12,6 +11,9 @@ function disableKeyScroll() {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
+    // if game is already created do nothing
+    if (document.querySelector('#snakecanvasID')) return
+    // otherwise
     disableKeyScroll()
     var canv = document.createElement("canvas");
     canv.setAttribute("id", "snakecanvasID");
@@ -39,18 +41,6 @@ chrome.runtime.onMessage.addListener(
         moveQueue.push(event.which);
       }
     });
-
-    // window.addEventListener('click', function(){
-    //   if (gameIsGoing){
-    //     removeDoc("snakecanvasID");
-    //     console.log("here!!!");
-    //     gameIsGoing = false
-    //   }
-    //   else {
-    //     console.log("here!!!!!!!");
-    //     // gameIsGoing = true
-    //   }
-    // });
 
     window.addEventListener('resize', function(event) {
       canvas.width = window.innerWidth;
