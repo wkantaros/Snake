@@ -1,23 +1,27 @@
 // content.js
+
+
+
+function disableKeyScroll() {
+  window.addEventListener("keydown", function(e) {
+      // space and arrow keys
+      if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+          e.preventDefault();
+      }
+  }, false);
+}
+
+// removes snake game from screen
+function removeElement(elementId) {
+    // Removes an element from the document
+    if (document.querySelector('#snakecanvasID')){
+      var element = document.getElementById(elementId);
+      element.parentNode.removeChild(element);
+    }
+}
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    function disableKeyScroll() {
-      window.addEventListener("keydown", function(e) {
-          // space and arrow keys
-          if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-              e.preventDefault();
-          }
-      }, false);
-    }
-
-    // removes snake game from screen
-    function removeElement(elementId) {
-        // Removes an element from the document
-        if (document.querySelector('#snakecanvasID')){
-          var element = document.getElementById(elementId);
-          element.parentNode.removeChild(element);
-        }
-    }
     // if game is already created do nothing
     if (document.querySelector('#snakecanvasID')) return
     // otherwise
