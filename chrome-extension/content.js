@@ -1,16 +1,23 @@
 // content.js
-function disableKeyScroll() {
-  console.log("I made it here bitches");
-  window.addEventListener("keydown", function(e) {
-      // space and arrow keys
-      if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-          e.preventDefault();
-      }
-  }, false);
-}
-
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
+    function disableKeyScroll() {
+      window.addEventListener("keydown", function(e) {
+          // space and arrow keys
+          if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+              e.preventDefault();
+          }
+      }, false);
+    }
+
+    // removes snake game from screen
+    function removeElement(elementId) {
+        // Removes an element from the document
+        if (document.querySelector('#snakecanvasID')){
+          var element = document.getElementById(elementId);
+          element.parentNode.removeChild(element);
+        }
+    }
     // if game is already created do nothing
     if (document.querySelector('#snakecanvasID')) return
     // otherwise
@@ -18,6 +25,8 @@ chrome.runtime.onMessage.addListener(
     var canv = document.createElement("canvas");
     canv.setAttribute("id", "snakecanvasID");
     document.body.appendChild(canv);
+    location.href = "#";
+    location.href = "#snakecanvasID";
     var canvas = document.querySelector("#snakecanvasID");
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight - 4;
@@ -30,6 +39,7 @@ chrome.runtime.onMessage.addListener(
     // lets draw 2d elements
     var c = canvas.getContext('2d');
     var moveQueue = [];
+    var spaceBarPressed = false
     window.addEventListener('keydown', function(event) {
       if (moveQueue.length > 0 &&
         ((event.which == 38 && moveQueue[moveQueue.length - 1] != 40) ||
@@ -39,6 +49,9 @@ chrome.runtime.onMessage.addListener(
         moveQueue.push(event.which);
       } else if (moveQueue.length == 0 && event.which <= 40 && event.which >= 38) {
         moveQueue.push(event.which);
+      } else if (event.which == 32){
+        spaceBarPressed = true
+        removeElement("snakecanvasID")
       }
     });
 
@@ -213,11 +226,12 @@ chrome.runtime.onMessage.addListener(
       // create loop
       function animate() {
         requestAnimationFrame(animate);
+        if (spaceBarPressed)
+          return
         now = Date.now();
         delta = now - then;
         if (delta > interval) {
           then = now - (delta % interval);
-          // if (gameIsGoing){
           c.clearRect(0, 0, innerWidth, innerHeight);
           makeBoundary();
           if (moveQueue.length == 0) { // if game hasn't started yet
@@ -229,7 +243,6 @@ chrome.runtime.onMessage.addListener(
             snake.update();
           else
             gameOver(snake);
-          // }
         }
       }
       animate();
