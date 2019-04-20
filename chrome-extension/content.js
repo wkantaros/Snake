@@ -1,22 +1,31 @@
 // content.js
 
+// TODO:
+// make fully functional game DONE
+// add game to html page, create canvas, etc DONE
+// make the page open up in the right spot DONE
+// remove arrow "un" capability DONE
+// make the arrow keys work as they should (for things like youtube)
 
-
-function disableKeyScroll() {
-  window.addEventListener("keydown", function(e) {
-      // space and arrow keys
-      if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-          e.preventDefault();
-      }
-  }, false);
+var handler1 = function again(event) {
+  let badKeys = [32, 37, 38, 39, 40];
+  if (badKeys.includes(event.which)) {
+    event.preventDefault();
+  }
 }
 
-// removes snake game from screen
+function disableKeyScroll() {
+  window.addEventListener("keydown", handler1, false);
+}
+
+// removes snake game from screen and re-eneables arrow keys
 function removeElement(elementId) {
     // Removes an element from the document
     if (document.querySelector('#snakecanvasID')){
       var element = document.getElementById(elementId);
       element.parentNode.removeChild(element);
+      // remove key locks
+      window.removeEventListener("keydown", handler1, false);
     }
 }
 
@@ -29,8 +38,6 @@ chrome.runtime.onMessage.addListener(
     var canv = document.createElement("canvas");
     canv.setAttribute("id", "snakecanvasID");
     document.body.appendChild(canv);
-    location.href = "#";
-    location.href = "#snakecanvasID";
     var canvas = document.querySelector("#snakecanvasID");
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight - 4;
@@ -254,8 +261,3 @@ chrome.runtime.onMessage.addListener(
     newGame()
   }
 );
-
-function removeDoc(id) {
-  var elem = document.getElementById(id);
-  return elem.parentNode.removeChild(elem);
-}
